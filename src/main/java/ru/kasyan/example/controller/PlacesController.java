@@ -27,7 +27,7 @@ import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64String;
 @RequestMapping("/api")
 public class PlacesController {
 
-//        public static final String SYSTEM_PACKAGE = "/home/ubuntu/vk/dbp/img/";
+    //        public static final String SYSTEM_PACKAGE = "/home/ubuntu/vk/dbp/img/";
     private static final String SYSTEM_PACKAGE = "/Users/Guest/some/";
 
     @Autowired
@@ -98,11 +98,21 @@ public class PlacesController {
 
     @GetMapping("/places/{country}/{vk_user_id}")
     public List<ImageAndDescription> getEmployeePhotosAndDecrByCountries(@PathVariable(value = "country") String country, @PathVariable(value = "vk_user_id") int vkUserId) {
-
         List<Place> places = getUsersPlaces(vkUserId).stream().filter(el -> el.getCountry().equals(country)).collect(Collectors.toList());
+        return getImageAndDescr(places);
+    }
+
+
+    @GetMapping("/{vk_user_id}")
+    public List<ImageAndDescription> getAllEmployeePlaces(@PathVariable(value = "vk_user_id") int vkUserId) {
+        List<Place> places = getUsersPlaces(vkUserId);
+        return getImageAndDescr(places);
+    }
+
+    private List<ImageAndDescription> getImageAndDescr(List<Place> placeList) {
         List<ImageAndDescription> imageAndDescriptionList = new ArrayList<>();
 
-        for (Place place : places) {
+        for (Place place : placeList) {
             ImageAndDescription imageAndDescription = new ImageAndDescription();
             imageAndDescription.setCity(place.getCity());
             imageAndDescription.setCountry(place.getCountry());
@@ -115,7 +125,6 @@ public class PlacesController {
             imageAndDescriptionList.add(imageAndDescription);
         }
         return imageAndDescriptionList;
-
     }
 
     @GetMapping("/{imageName}/places")
