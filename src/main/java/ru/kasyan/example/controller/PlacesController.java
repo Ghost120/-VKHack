@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.kasyan.example.filestorage.FileStorageService;
 import ru.kasyan.example.model.Place;
+import ru.kasyan.example.model.responses.CounrtriesCountPlaces;
 import ru.kasyan.example.model.responses.ImageAndDescription;
 import ru.kasyan.example.repository.PlacesRepository;
 
@@ -27,11 +27,11 @@ import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64String;
 @RequestMapping("/api")
 public class PlacesController {
 
-    @Autowired
-    private PlacesRepository placesRepository;
+//        public static final String SYSTEM_PACKAGE = "/home/ubuntu/vk/dbp/img/";
+    private static final String SYSTEM_PACKAGE = "/Users/Guest/some/";
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private PlacesRepository placesRepository;
 
     @GetMapping("/places")
     public List<Place> getAllPlaces() {
@@ -75,7 +75,9 @@ public class PlacesController {
 
 
     @GetMapping("/places/countries/{vk_user_id}")
-    public ResponseEntity<Map<String, Integer>> getEmployeeCountCountriesById(@PathVariable(value = "vk_user_id") int vkUserId) {
+    public ResponseEntity<List<CounrtriesCountPlaces>> getEmployeeCountCountriesById(@PathVariable(value = "vk_user_id") int vkUserId) {
+
+        List<CounrtriesCountPlaces> list = new ArrayList<>();
         Map<String, Integer> counryNameMap = new HashMap<>();
 
         getUsersPlaces(vkUserId).forEach(el -> {
@@ -85,8 +87,12 @@ public class PlacesController {
                 counryNameMap.put(el.getCountry(), 1);
             }
         });
+        counryNameMap.entrySet().forEach(el -> {
+            list.add(new CounrtriesCountPlaces(el.getKey(), el.getValue()));
+        });
 
-        return ResponseEntity.ok().body(counryNameMap);
+
+        return ResponseEntity.ok().body(list);
     }
 
 
@@ -113,22 +119,26 @@ public class PlacesController {
     }
 
     @GetMapping("/{imageName}/places")
-    public String getImageUser(@PathVariable(value = "imageName") String imageName) {
+    public Map<String, String> getImageUser(@PathVariable(value = "imageName") String imageName) {
         try {
-            Path path = Paths.get("/Users/Guest/some/" + imageName);
+            Path path = Paths.get(SYSTEM_PACKAGE + imageName);
+            HashMap<String, String> stringStringHashMap = new HashMap<>();
             byte[] bytes = Files.readAllBytes(path);
-            return encodeBase64String(bytes);
+            stringStringHashMap.put("image", encodeBase64String(bytes));
+            return stringStringHashMap;
 
         } catch (IOException e) {
+            HashMap<String, String> stringStringHashMap = new HashMap<>();
             System.out.println("Картинка не загрузилась");
-            Path path = Paths.get("/Users/Guest/some/sorry.jpg");
+            Path path = Paths.get(SYSTEM_PACKAGE + "sorry.jpg");
             byte[] bytes = new byte[0];
             try {
                 bytes = Files.readAllBytes(path);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            return encodeBase64String(bytes);
+            stringStringHashMap.put("image", encodeBase64String(bytes));
+            return stringStringHashMap;
         }
     }
 
@@ -147,7 +157,7 @@ public class PlacesController {
         try {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            Path path = Paths.get("/Users/Guest/some/" + file.getOriginalFilename());
+            Path path = Paths.get(SYSTEM_PACKAGE + file.getOriginalFilename());
             Files.write(path, bytes);
             System.out.println("Файл сохранился " + file.getOriginalFilename());
 
@@ -155,5 +165,4 @@ public class PlacesController {
 
         }
     }
-
 }

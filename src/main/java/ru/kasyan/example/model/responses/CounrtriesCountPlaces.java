@@ -1,20 +1,20 @@
 package ru.kasyan.example.model.responses;
 
 public class CounrtriesCountPlaces {
-    private String photoName;
+    private String countryName;
     private int latitude;
 
     public CounrtriesCountPlaces(String photoName, int latitude) {
-        this.photoName = photoName;
+        this.countryName = photoName;
         this.latitude = latitude;
     }
 
     public String getPhotoName() {
-        return photoName;
+        return countryName;
     }
 
     public void setPhotoName(String photoName) {
-        this.photoName = photoName;
+        this.countryName = photoName;
     }
 
     public int getLatitude() {
