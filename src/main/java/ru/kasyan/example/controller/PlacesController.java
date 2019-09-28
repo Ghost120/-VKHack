@@ -27,8 +27,8 @@ import static org.apache.tomcat.util.codec.binary.Base64.encodeBase64String;
 @RequestMapping("/api")
 public class PlacesController {
 
-    //        public static final String SYSTEM_PACKAGE = "/home/ubuntu/vk/dbp/img/";
-    private static final String SYSTEM_PACKAGE = "/Users/Guest/some/";
+            public static final String SYSTEM_PACKAGE = "/home/ubuntu/vk/dbp/img/";
+//    private static final String SYSTEM_PACKAGE = "/Users/Guest/some/";
 
     @Autowired
     private PlacesRepository placesRepository;
@@ -81,8 +81,8 @@ public class PlacesController {
         Map<String, Integer> counryNameMap = new HashMap<>();
 
         getUsersPlaces(vkUserId).forEach(el -> {
-            if (counryNameMap.containsKey(el)) {
-                counryNameMap.put(el.getCountry(), counryNameMap.get(el) + 1);
+            if (counryNameMap.containsKey(el.getCountry())) {
+                counryNameMap.put(el.getCountry(), counryNameMap.get(el.getCountry()) + 1);
             } else {
                 counryNameMap.put(el.getCountry(), 1);
             }
@@ -171,7 +171,7 @@ public class PlacesController {
             System.out.println("Файл сохранился " + file.getOriginalFilename());
 
         } catch (IOException e) {
-
+            System.out.println("Что то пошло не так при созранении файла");
         }
     }
 }
